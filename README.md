@@ -1,3 +1,15 @@
+## Your Task
+
+This tiny app mocks our business case: we render notifications when users go online and offline. In this sandbox, the data source is mocked with [two buttons](./src/OnlineStatusMock.js).
+
+Get familiar with the code and see it [live](https://preply.github.io/fe-riddle-online-status/build/).
+
+We are going to ask you to extend it with some features. 
+
+While you code them, please, keep the [mock](./src/OnlineStatusMock.js) untouched, otherwise do whatever you would do in real world. If you need a dependency, go for it.
+
+## CRA Docs
+
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
 
 ## Available Scripts
