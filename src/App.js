@@ -18,15 +18,42 @@ const withOnlineStatus = WrappedComponent =>
     constructor(props) {
       super(props);
       this.state = { isOnline: false };
+      this.quickDisconnectMS = 2000;
+      this.lastTimeOffline = null;
+      this.offlineTimer = null;
     }
-    render() {
+
+    setOffline = () => {
+      this.offlineTimer = null;
+      // Since offline notifications are deferred, we have to check duplication right before setState too, 
+      // because we cannot know isOnline state in future
+      if (!this.state.isOnline) return; // Skip duplications
+      this.setState({ isOnline: false });
+    }
+
+    onIsOnlineChange = nextIsOnline => {
       const { isOnline } = this.state;
+      const now = Date.now();
+      if (nextIsOnline && this.lastTimeOffline && now - this.lastTimeOffline < this.quickDisconnectMS) {
+        // Quick disconnect happened
+        clearTimeout(this.offlineTimer) // Cancel deferred offline notification
+        this.offlineTimer = null;
+        return; // Skip, because it's already online
+      }
+      if (nextIsOnline && !isOnline) {
+        this.setState({ isOnline: true }); // Switch to online, skipping duplications
+      } else if (!nextIsOnline && isOnline) {
+        if (this.offlineTimer) clearTimeout(this.offlineTimer); // Clear previous deferred offline switch, if exists
+        this.offlineTimer = setTimeout(this.setOffline, this.quickDisconnectMS); // Set new deferred switch to offline
+        this.lastTimeOffline = now;
+      }
+    }
+
+    render() {
       return (
         <>
-          <OnlineStatusMock
-            onIsOnlineChange={isOnline => this.setState({ isOnline })}
-          />
-          <WrappedComponent {...this.props} isOnline={isOnline} />
+          <OnlineStatusMock onIsOnlineChange={this.onIsOnlineChange} />
+          <WrappedComponent {...this.props} isOnline={this.state.isOnline} />
         </>
       );
     }
