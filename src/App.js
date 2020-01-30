@@ -33,8 +33,8 @@ const withOnlineStatus = WrappedComponent =>
   };
 
 class App extends React.Component {
-  componentDidUpdate({ isOnline }) {
-    NotificationManager.info(isOnline ? 'Online' : 'Offline');
+  componentDidUpdate() {
+    NotificationManager.info(this.props.isOnline ? 'Online' : 'Offline');
   }
 
   render() {
