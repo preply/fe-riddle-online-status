@@ -43,7 +43,7 @@ const withOnlineStatus = WrappedComponent =>
       if (nextIsOnline && !isOnline) {
         this.setState({ isOnline: true }); // Switch to online, skipping duplications
       } else if (!nextIsOnline && isOnline) {
-        if (this.offlineTimer) clearTimeout(this.offlineTimer); // Clear previous deferred offline switch, if exists
+        if (this.offlineTimer) return; // Skip, because deferred offline switch is already set
         this.offlineTimer = setTimeout(this.setOffline, this.quickDisconnectMS); // Set new deferred switch to offline
         this.lastTimeOffline = now;
       }
