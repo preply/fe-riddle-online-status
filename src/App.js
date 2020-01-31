@@ -19,7 +19,6 @@ const withOnlineStatus = WrappedComponent =>
       super(props);
       this.state = { isOnline: false };
       this.quickDisconnectMS = 2000;
-      this.lastTimeOffline = null;
       this.offlineTimer = null;
     }
 
@@ -33,8 +32,7 @@ const withOnlineStatus = WrappedComponent =>
 
     onIsOnlineChange = nextIsOnline => {
       const { isOnline } = this.state;
-      const now = Date.now();
-      if (nextIsOnline && this.lastTimeOffline && now - this.lastTimeOffline < this.quickDisconnectMS) {
+      if (nextIsOnline && this.offlineTimer) {
         // Quick disconnect happened
         clearTimeout(this.offlineTimer) // Cancel deferred offline notification
         this.offlineTimer = null;
@@ -45,7 +43,6 @@ const withOnlineStatus = WrappedComponent =>
       } else if (!nextIsOnline && isOnline) {
         if (this.offlineTimer) return; // Skip, because deferred offline switch is already set
         this.offlineTimer = setTimeout(this.setOffline, this.quickDisconnectMS); // Set new deferred switch to offline
-        this.lastTimeOffline = now;
       }
     }
 
